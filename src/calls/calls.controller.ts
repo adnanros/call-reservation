@@ -12,6 +12,12 @@ export class CallsController {
   async getCalls(): Promise<Call[]> {
     return this.callsService.getCalls();
   }
+
+  @Get('/:id')
+  async getCallById(@Param('id') id: string): Promise<Call> {
+    return this.callsService.getCallById(id);
+  }
+
   @Post()
   async reserveCall(@Body() createCallDto: CreateCallDto): Promise<Call> {
     return this.callsService.reserveCall(createCallDto);

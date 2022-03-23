@@ -17,6 +17,11 @@ export class CallsService {
     return this.callsRepository.getCalls();
   }
 
+  async getCallById(id: string): Promise<Call> {
+    const call: Call = await this.callsRepository.findOne(id);
+    return call;
+  }
+
   async reserveCall(createCallDto: CreateCallDto): Promise<Call> {
     return this.callsRepository.reserveCall(createCallDto);
   }
