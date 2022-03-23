@@ -4,5 +4,7 @@ export enum CallStatus {
     ACCEPTED = 'ACCEPTED',
     REJECTED = 'REJECTED',
     CANCELED = 'CANCELED',
+    ONGOING = 'ONGOING', // The call is ongoing
+    DONE = 'DONE', // The call was successfully done
   }
   
