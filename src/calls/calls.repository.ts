@@ -4,6 +4,11 @@ import { Call } from './call.entity';
 import { CreateCallDto } from './dto/create-call.dto';
 @EntityRepository(Call)
 export class CallsRepository extends Repository<Call> {
+  async getCalls(): Promise<Call[]> {
+    const calls: Call[] = await this.find();
+    return calls;
+  }
+
   async reserveCall(createCallDto: CreateCallDto): Promise<Call> {
     const { description, callTime } = createCallDto;
     const call = this.create({

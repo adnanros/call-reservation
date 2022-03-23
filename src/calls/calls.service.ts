@@ -11,6 +11,10 @@ export class CallsService {
     private callsRepository: CallsRepository,
   ) {}
 
+  async getCalls(): Promise<Call[]> {
+    return this.callsRepository.getCalls();
+  }
+
   async reserveCall(createCallDto: CreateCallDto): Promise<Call> {
     return this.callsRepository.reserveCall(createCallDto);
   }
