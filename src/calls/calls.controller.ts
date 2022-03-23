@@ -21,4 +21,9 @@ export class CallsController {
   async acceptACallByAdmin(@Param('id') id: string): Promise<UpdateResult> {
     return this.callsService.acceptACallByAdmin(id);
   }
+
+  @Patch('/reject/:id')
+  async rejectACallByAdmin(@Param('id') id: string): Promise<UpdateResult> {
+    return this.callsService.rejectACallByAdmin(id);
+  }
 }

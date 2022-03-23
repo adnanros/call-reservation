@@ -27,4 +27,11 @@ export class CallsService {
     });
     return result;
   }
+
+  async rejectACallByAdmin(id: string): Promise<UpdateResult> {
+    const result = await this.callsRepository.update(id, {
+      status: CallStatus.REJECTED,
+    });
+    return result;
+  }
 }
