@@ -34,4 +34,11 @@ export class CallsService {
     });
     return result;
   }
+
+  async cancelACallByAdmin(id: string): Promise<UpdateResult> {
+    const result = await this.callsRepository.update(id, {
+      status: CallStatus.CANCELED,
+    });
+    return result;
+  }
 }
