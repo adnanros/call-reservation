@@ -1,10 +1,10 @@
 /* eslint-disable prettier/prettier */
-export enum CallStatus {
+export enum ReservationStatus {
     REQUESTED = 'REQUESTED',
     ACCEPTED = 'ACCEPTED',
     REJECTED = 'REJECTED',
     CANCELED = 'CANCELED',
-    ONGOING = 'ONGOING', // The call is ongoing
-    DONE = 'DONE', // The call was successfully done
+    ONGOING = 'ONGOING', // The reservation is ongoing
+    DONE = 'DONE', // The reservation was successfully done
   }
   

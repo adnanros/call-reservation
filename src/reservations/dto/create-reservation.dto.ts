@@ -1,9 +1,9 @@
 import { IsNotEmpty } from 'class-validator';
 
-export class CreateCallDto {
+export class CreateReservationDto {
   @IsNotEmpty()
   description: string;
 
   @IsNotEmpty()
-  callTime: string;
+  reservationTime: string;
 }
