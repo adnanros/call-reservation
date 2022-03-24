@@ -34,7 +34,7 @@ export class CallsController {
   }
 
   @Patch('/cancel/:id')
-  async cancelACallByAdmin(@Param('id') id: string): Promise<UpdateResult> {
-    return this.callsService.cancelACallByAdmin(id);
+  async cancelACallByUser(@Param('id') id: string): Promise<Call> {
+    return this.callsService.cancelACallByUser(id);
   }
 }

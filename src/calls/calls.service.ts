@@ -67,10 +67,21 @@ export class CallsService {
     }
   }
 
-  async cancelACallByAdmin(id: string): Promise<UpdateResult> {
-    const result = await this.callsRepository.update(id, {
-      status: CallStatus.CANCELED,
-    });
-    return result;
+  // User can only cancel the call that is in requested or accepted state
+
+  async cancelACallByUser(id: string): Promise<Call> {
+    const call = await this.getCallById(id);
+    if (
+      call.status === CallStatus.ACCEPTED ||
+      call.status === CallStatus.REQUESTED
+    ) {
+      call.status = CallStatus.CANCELED;
+      await this.callsRepository.save(call);
+      return call;
+    } else {
+      throw new MethodNotAllowedException(
+        'You are not allowed to change this call status',
+      );
+    }
   }
 }
