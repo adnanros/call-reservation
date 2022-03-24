@@ -1,4 +1,8 @@
-import { Injectable, MethodNotAllowedException, NotFoundException } from '@nestjs/common';
+import {
+  Injectable,
+  MethodNotAllowedException,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UpdateResult } from 'typeorm';
 import { CallStatus } from './call-status.enum';
@@ -49,11 +53,18 @@ export class CallsService {
     }
   }
 
-  async rejectACallByAdmin(id: string): Promise<UpdateResult> {
-    const result = await this.callsRepository.update(id, {
-      status: CallStatus.REJECTED,
-    });
-    return result;
+  /**
+    Admin can reject any call except that calls which are done already
+ */
+  async rejectACallByAdmin(id: string): Promise<Call> {
+    const call = await this.getCallById(id);
+    if (call.status !== CallStatus.DONE) {
+      call.status = CallStatus.REJECTED;
+      await this.callsRepository.save(call);
+      return call;
+    } else {
+      throw new MethodNotAllowedException('The target call is done already');
+    }
   }
 
   async cancelACallByAdmin(id: string): Promise<UpdateResult> {

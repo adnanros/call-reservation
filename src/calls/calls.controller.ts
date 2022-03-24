@@ -29,7 +29,7 @@ export class CallsController {
   }
 
   @Patch('/reject/:id')
-  async rejectACallByAdmin(@Param('id') id: string): Promise<UpdateResult> {
+  async rejectACallByAdmin(@Param('id') id: string): Promise<Call> {
     return this.callsService.rejectACallByAdmin(id);
   }
 
