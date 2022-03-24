@@ -7,7 +7,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { ReservationStatus } from './reservation-status.enum';
 import { Reservation } from './reservation.entity';
 import { ReservationsRepository } from './reservations.repository';
-import { CreateReservationDto } from './dto/create-reservation.dto';
+import { CreateReservationRequestDto } from './dto/create-reservation-request.dto';
 
 @Injectable()
 export class ReservationsService {
@@ -32,10 +32,12 @@ export class ReservationsService {
     }
   }
 
-  async reserveReservation(
-    createReservationDto: CreateReservationDto,
+  async createReservationRequest(
+    createReservationDto: CreateReservationRequestDto,
   ): Promise<Reservation> {
-    return this.reservationsRepository.reserveReservation(createReservationDto);
+    return this.reservationsRepository.createReservationRequest(
+      createReservationDto,
+    );
   }
 
   /**

@@ -5,10 +5,31 @@ import { ReservationStatus } from './reservation-status.enum';
 export class Reservation {
   @PrimaryGeneratedColumn('uuid')  
   id: string;
+
   @Column()
-  description: string;
+  startTime: string;
+
   @Column()
-  reservationTime: string;
+  endTime: string;
+
+  @Column()
+  email: string;
+
+  @Column()
+  phone: string;
+
+  @Column()
+  pushNotificationKey: string;
+
+  @Column()
+  receiveEmail: boolean;
+
+  @Column()
+  receiveSmsNotification: boolean;
+
+  @Column()
+  receivePushNotification: boolean;
+
   @Column()
   status: ReservationStatus;
 }

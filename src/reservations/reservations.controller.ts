@@ -1,7 +1,7 @@
 import { Body, Controller, Get, Param, Patch, Post } from '@nestjs/common';
 import { Reservation } from './reservation.entity';
 import { ReservationsService } from './reservations.service';
-import { CreateReservationDto } from './dto/create-reservation.dto';
+import { CreateReservationRequestDto } from './dto/create-reservation-request.dto';
 
 @Controller('reservations')
 export class ReservationsController {
@@ -18,10 +18,12 @@ export class ReservationsController {
   }
 
   @Post()
-  async reserveReservation(
-    @Body() createReservationDto: CreateReservationDto,
+  async createReservationRequest(
+    @Body() createReservationDto: CreateReservationRequestDto,
   ): Promise<Reservation> {
-    return this.reservationsService.reserveReservation(createReservationDto);
+    return this.reservationsService.createReservationRequest(
+      createReservationDto,
+    );
   }
 
   @Patch('/accept/:id')

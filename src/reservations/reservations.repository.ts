@@ -1,7 +1,7 @@
 import { EntityRepository, Repository } from 'typeorm';
 import { ReservationStatus } from './reservation-status.enum';
 import { Reservation } from './reservation.entity';
-import { CreateReservationDto } from './dto/create-reservation.dto';
+import { CreateReservationRequestDto } from './dto/create-reservation-request.dto';
 @EntityRepository(Reservation)
 export class ReservationsRepository extends Repository<Reservation> {
   async getReservations(): Promise<Reservation[]> {
@@ -9,13 +9,19 @@ export class ReservationsRepository extends Repository<Reservation> {
     return reservations;
   }
 
-  async reserveReservation(
-    createReservationDto: CreateReservationDto,
+  async createReservationRequest(
+    createReservationDto: CreateReservationRequestDto,
   ): Promise<Reservation> {
-    const { description, reservationTime } = createReservationDto;
+    const { startTime, endTime, email, phone } = createReservationDto;
     const reservation = this.create({
-      description,
-      reservationTime,
+      startTime,
+      endTime,
+      email,
+      phone,
+      pushNotificationKey: 'someNotificationKey',
+      receiveEmail: false,
+      receiveSmsNotification: false,
+      receivePushNotification: false,
       status: ReservationStatus.REQUESTED,
     });
     await this.save(reservation);
