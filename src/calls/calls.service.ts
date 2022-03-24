@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, MethodNotAllowedException, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UpdateResult } from 'typeorm';
 import { CallStatus } from './call-status.enum';
@@ -30,11 +30,23 @@ export class CallsService {
     return this.callsRepository.reserveCall(createCallDto);
   }
 
-  async acceptACallByAdmin(id: string): Promise<UpdateResult> {
-    const result = await this.callsRepository.update(id, {
-      status: CallStatus.ACCEPTED,
-    });
-    return result;
+  /**
+   1. At the first we should try fetch the target call to see if that it exists.
+   2.Secondly, we have to take the previous state of the call, the acceptance
+    should be applied for only the calls which are in Requested state.
+
+  */
+  async acceptACallByAdmin(id: string): Promise<Call> {
+    const call = await this.getCallById(id);
+    if (call.status === CallStatus.REQUESTED) {
+      call.status = CallStatus.ACCEPTED;
+      await this.callsRepository.save(call);
+      return call;
+    } else {
+      throw new MethodNotAllowedException(
+        'Action is not allowed for this call',
+      );
+    }
   }
 
   async rejectACallByAdmin(id: string): Promise<UpdateResult> {
