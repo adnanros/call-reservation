@@ -4,7 +4,7 @@ import { Reservation } from './reservation.entity';
 import { CreateReservationRequestDto } from './dto/create-reservation-request.dto';
 @EntityRepository(Reservation)
 export class ReservationsRepository extends Repository<Reservation> {
-  async getReservations(): Promise<Reservation[]> {
+  async getReservationsResponse(): Promise<Reservation[]> {
     const reservations: Reservation[] = await this.find();
     return reservations;
   }

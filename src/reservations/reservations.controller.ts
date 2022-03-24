@@ -8,8 +8,8 @@ export class ReservationsController {
   constructor(private reservationsService: ReservationsService) {}
 
   @Get()
-  async getReservations(): Promise<Reservation[]> {
-    return this.reservationsService.getReservations();
+  async getReservationsResponse(): Promise<Reservation[]> {
+    return this.reservationsService.getReservationsResponse();
   }
 
   @Get('/:id')
@@ -29,23 +29,21 @@ export class ReservationsController {
   }
 
   @Patch('/accept/:id')
-  async acceptAReservationByAdmin(
+  async acceptReservationByAdmin(
     @Param('id') id: string,
   ): Promise<Reservation> {
-    return this.reservationsService.acceptAReservationByAdmin(id);
+    return this.reservationsService.acceptReservationByAdmin(id);
   }
 
   @Patch('/reject/:id')
-  async rejectAReservationByAdmin(
+  async rejectReservationByAdmin(
     @Param('id') id: string,
   ): Promise<Reservation> {
-    return this.reservationsService.rejectAReservationByAdmin(id);
+    return this.reservationsService.rejectReservationByAdmin(id);
   }
 
   @Patch('/cancel/:id')
-  async cancelAReservationByUser(
-    @Param('id') id: string,
-  ): Promise<Reservation> {
-    return this.reservationsService.cancelAReservationByUser(id);
+  async cancelReservationByUser(@Param('id') id: string): Promise<Reservation> {
+    return this.reservationsService.cancelReservationByUser(id);
   }
 }

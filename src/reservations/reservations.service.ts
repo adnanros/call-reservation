@@ -16,8 +16,8 @@ export class ReservationsService {
     private reservationsRepository: ReservationsRepository,
   ) {}
 
-  async getReservations(): Promise<Reservation[]> {
-    return this.reservationsRepository.getReservations();
+  async getReservationsResponse(): Promise<Reservation[]> {
+    return this.reservationsRepository.getReservationsResponse();
   }
 
   async getSingleReservationResponse(id: string): Promise<Reservation> {
@@ -46,11 +46,34 @@ export class ReservationsService {
     should be applied for only the reservations which are in Requested state.
 
   */
-  async acceptAReservationByAdmin(id: string): Promise<Reservation> {
+  async acceptReservationByAdmin(id: string): Promise<Reservation> {
     const reservation = await this.getSingleReservationResponse(id);
     if (reservation.status === ReservationStatus.REQUESTED) {
       reservation.status = ReservationStatus.ACCEPTED;
       await this.reservationsRepository.save(reservation);
+      console.log('emailTo(UserEmailAddress)');
+      if (reservation.receiveEmail) {
+        console.log(
+          'setSheduleEventOnServer(emailTo(user' +
+            reservation.email +
+            ')) on reservation.startTime - 10min',
+        );
+      }
+      if (reservation.receivePushNotification) {
+        console.log(
+          'setSheduleEventOnServer(emailTo(user' +
+            reservation.email +
+            ')) on reservation.startTime - 5min:',
+        );
+      }
+      if (reservation.receiveSmsNotification) {
+        console.log(
+          'setSheduleEventOnServer(emailTo(user' +
+            reservation.email +
+            ')) on reservation.startTime - 1min:',
+        );
+      }
+
       return reservation;
     } else {
       throw new MethodNotAllowedException(
@@ -62,11 +85,12 @@ export class ReservationsService {
   /**
     Admin can reject any reservation except that reservations which are done already
  */
-  async rejectAReservationByAdmin(id: string): Promise<Reservation> {
+  async rejectReservationByAdmin(id: string): Promise<Reservation> {
     const reservation = await this.getSingleReservationResponse(id);
     if (reservation.status !== ReservationStatus.DONE) {
       reservation.status = ReservationStatus.REJECTED;
       await this.reservationsRepository.save(reservation);
+      console.log('emailTo(UserEmailAddress)');
       return reservation;
     } else {
       throw new MethodNotAllowedException(
@@ -77,7 +101,7 @@ export class ReservationsService {
 
   // User can only cancel the reservation that is in requested or accepted state
 
-  async cancelAReservationByUser(id: string): Promise<Reservation> {
+  async cancelReservationByUser(id: string): Promise<Reservation> {
     const reservation = await this.getSingleReservationResponse(id);
     if (
       reservation.status === ReservationStatus.ACCEPTED ||
@@ -85,6 +109,7 @@ export class ReservationsService {
     ) {
       reservation.status = ReservationStatus.CANCELED;
       await this.reservationsRepository.save(reservation);
+      console.log('emailTo(AdminEmailAddress)');
       return reservation;
     } else {
       throw new MethodNotAllowedException(
