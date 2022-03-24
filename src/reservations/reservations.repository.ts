@@ -23,6 +23,7 @@ export class ReservationsRepository extends Repository<Reservation> {
       receiveSmsNotification: false,
       receivePushNotification: false,
       status: ReservationStatus.REQUESTED,
+      createdTime: new Date().getTime().toString(),
     });
     await this.save(reservation);
     return reservation;

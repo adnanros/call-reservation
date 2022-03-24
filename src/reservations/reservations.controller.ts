@@ -13,8 +13,10 @@ export class ReservationsController {
   }
 
   @Get('/:id')
-  async getReservationById(@Param('id') id: string): Promise<Reservation> {
-    return this.reservationsService.getReservationById(id);
+  async getSingleReservationResponse(
+    @Param('id') id: string,
+  ): Promise<Reservation> {
+    return this.reservationsService.getSingleReservationResponse(id);
   }
 
   @Post()

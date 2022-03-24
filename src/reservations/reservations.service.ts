@@ -20,7 +20,7 @@ export class ReservationsService {
     return this.reservationsRepository.getReservations();
   }
 
-  async getReservationById(id: string): Promise<Reservation> {
+  async getSingleReservationResponse(id: string): Promise<Reservation> {
     try {
       const reservation: Reservation =
         await this.reservationsRepository.findOne(id);
@@ -47,7 +47,7 @@ export class ReservationsService {
 
   */
   async acceptAReservationByAdmin(id: string): Promise<Reservation> {
-    const reservation = await this.getReservationById(id);
+    const reservation = await this.getSingleReservationResponse(id);
     if (reservation.status === ReservationStatus.REQUESTED) {
       reservation.status = ReservationStatus.ACCEPTED;
       await this.reservationsRepository.save(reservation);
@@ -63,7 +63,7 @@ export class ReservationsService {
     Admin can reject any reservation except that reservations which are done already
  */
   async rejectAReservationByAdmin(id: string): Promise<Reservation> {
-    const reservation = await this.getReservationById(id);
+    const reservation = await this.getSingleReservationResponse(id);
     if (reservation.status !== ReservationStatus.DONE) {
       reservation.status = ReservationStatus.REJECTED;
       await this.reservationsRepository.save(reservation);
@@ -78,7 +78,7 @@ export class ReservationsService {
   // User can only cancel the reservation that is in requested or accepted state
 
   async cancelAReservationByUser(id: string): Promise<Reservation> {
-    const reservation = await this.getReservationById(id);
+    const reservation = await this.getSingleReservationResponse(id);
     if (
       reservation.status === ReservationStatus.ACCEPTED ||
       reservation.status === ReservationStatus.REQUESTED

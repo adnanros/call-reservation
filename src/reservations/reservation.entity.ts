@@ -32,4 +32,7 @@ export class Reservation {
 
   @Column()
   status: ReservationStatus;
+
+  @Column()
+  createdTime: string;
 }
