@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UpdateResult } from 'typeorm';
 import { CallStatus } from './call-status.enum';
@@ -18,8 +18,12 @@ export class CallsService {
   }
 
   async getCallById(id: string): Promise<Call> {
-    const call: Call = await this.callsRepository.findOne(id);
-    return call;
+    try {
+      const call: Call = await this.callsRepository.findOne(id);
+      return call;
+    } catch (error) {
+      throw new NotFoundException('The call by Id: ' + id + ' does not exist');
+    }
   }
 
   async reserveCall(createCallDto: CreateCallDto): Promise<Call> {
