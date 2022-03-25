@@ -3,15 +3,15 @@ import { SchedulerRegistry } from '@nestjs/schedule';
 // import { CronJob } from 'cron';
 
 @Injectable()
-export class EmailsService {
+export class NotificationService {
   schedulerRegistry: SchedulerRegistry;
   constructor() {
     this.schedulerRegistry = new SchedulerRegistry();
   }
-  private readonly logger = new Logger(EmailsService.name);
+  private readonly logger = new Logger(NotificationService.name);
   addTimeout(name: string, milliseconds: number) {
     const callback = () => {
-      console.log('SEnding Email');
+      console.log('SEnding Notification');
     };
     const timeout = setTimeout(callback.bind(this), milliseconds);
     this.schedulerRegistry.addTimeout(name, timeout);

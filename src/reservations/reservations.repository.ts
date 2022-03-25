@@ -2,15 +2,21 @@ import { EntityRepository, Repository } from 'typeorm';
 import { ReservationStatus } from './reservation-status.enum';
 import { Reservation } from './reservation.entity';
 import { CreateReservationRequestDto } from './dto/create-reservation-request.dto';
-import { SchedulerRegistry } from '@nestjs/schedule';
 import { Logger } from '@nestjs/common';
 import { EmailsService } from './emails.service';
+import { NotificationService } from './notification.service';
+import { SmsService } from './sms.service';
 @EntityRepository(Reservation)
 export class ReservationsRepository extends Repository<Reservation> {
-  constructor(private schedulerRegistry: SchedulerRegistry) {
+  emailService: EmailsService;
+  notificationService: NotificationService;
+  smsService: SmsService;
+  constructor() {
     super();
+    this.emailService = new EmailsService();
+    this.notificationService = new NotificationService();
+    this.smsService = new SmsService();
   }
-  private readonly emailSchedulingService: EmailsService;
   private readonly logger = new Logger(ReservationsRepository.name);
 
   async getReservationsResponse(): Promise<Reservation[]> {
@@ -41,40 +47,12 @@ export class ReservationsRepository extends Repository<Reservation> {
     const nowTime = Number(Date.now());
     const emailTime =
       Number(reservation.startTime) - nowTime - 10 * 60 * 60 * 1000;
-    this.emailTimeout('email', emailTime);
-
-    //SmS time
-    const smsTime = emailTime - 5 * 60 * 60 * 1000;
-    this.smsTimeout('sms', smsTime);
-
-    //notification time
-    const notificationTime =
-      Number(reservation.startTime) - nowTime - 1 * 60 * 60 * 1000;
-    this.notificationTimeout('sms', notificationTime);
-
+    this.emailService.addTimeout('email' + reservation.id, emailTime);
+    this.notificationService.addTimeout(
+      'notiication' + reservation.id,
+      emailTime - 50000,
+    );
+    this.smsService.addTimeout('sms' + reservation.id, emailTime - 9000);
     return reservation;
-  }
-
-  //Time-out functions to set time out and define a trigger event
-  emailTimeout(name: string, milliseconds: number) {
-    const callback = () => {
-      console.log('Sending Email');
-    };
-    const timeout = setTimeout(callback, milliseconds);
-    this.schedulerRegistry.addTimeout(name, timeout);
-  }
-  smsTimeout(name: string, milliseconds: number) {
-    const callback = () => {
-      console.log('Sending SmS');
-    };
-    const timeout = setTimeout(callback, milliseconds);
-    this.schedulerRegistry.addTimeout(name, timeout);
-  }
-  notificationTimeout(name: string, milliseconds: number) {
-    const callback = () => {
-      console.log('Sending Notification');
-    };
-    const timeout = setTimeout(callback, milliseconds);
-    this.schedulerRegistry.addTimeout(name, timeout);
   }
 }
