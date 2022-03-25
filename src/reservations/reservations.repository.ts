@@ -12,6 +12,7 @@ export class ReservationsRepository extends Repository<Reservation> {
   }
   private readonly emailSchedulingService: EmailsService;
   private readonly logger = new Logger(ReservationsRepository.name);
+
   async getReservationsResponse(): Promise<Reservation[]> {
     const reservations: Reservation[] = await this.find();
     return reservations;

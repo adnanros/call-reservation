@@ -46,4 +46,12 @@ export class ReservationsController {
   async cancelReservationByUser(@Param('id') id: string): Promise<Reservation> {
     return this.reservationsService.cancelReservationByUser(id);
   }
+
+  @Patch('/changetime/:id')
+  async updateReservationTime(
+    @Param('id') id: string,
+    @Body('startTime') startTime: string,
+  ): Promise<Reservation> {
+    return this.reservationsService.updateReservationTime(id, startTime);
+  }
 }

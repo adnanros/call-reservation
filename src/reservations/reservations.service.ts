@@ -117,4 +117,26 @@ export class ReservationsService {
       );
     }
   }
+
+  async updateReservationTime(
+    id: string,
+    startTime: string,
+  ): Promise<Reservation> {
+    const reservation = await this.getSingleReservationResponse(id);
+    if (
+      reservation.status !== ReservationStatus.DONE &&
+      reservation.status !== ReservationStatus.ONGOING &&
+      Number(startTime) > Date.now()
+    ) {
+      reservation.startTime = startTime;
+      reservation.status = ReservationStatus.REQUESTED;
+      await this.reservationsRepository.save(reservation);
+      console.log('emailTo(AdminEmailAddress)');
+      return reservation;
+    } else {
+      throw new MethodNotAllowedException(
+        'You are not allowed to change this reservation status',
+      );
+    }
+  }
 }
