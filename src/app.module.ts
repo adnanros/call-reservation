@@ -3,7 +3,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { ReservationsModule } from './reservations/reservations.module';
-import { EmailsModule } from './emails/emails.module';
+import { SchedulersModule } from './schedulers/schedulers.module';
 
 @Module({
   imports: [
@@ -18,7 +18,7 @@ import { EmailsModule } from './emails/emails.module';
       autoLoadEntities: true,
       synchronize: true,
     }),
-    EmailsModule,
+    SchedulersModule,
   ],
   controllers: [AppController],
   providers: [AppService],
