@@ -1,12 +1,27 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { ReservationStatus } from './reservation-status.enum';
+import { Reservation } from './reservation.entity';
 import { ReservationsRepository } from './reservations.repository';
 import { ReservationsService } from './reservations.service';
 
 const mockReservationRepository = () => ({
-  getReservationsresponse: jest.fn(),
+  find: jest.fn(),
   findOne: jest.fn(),
 });
+
+const mockReservation = {
+  id: 'someId',
+  startTime: 'someTime',
+  endTime: 'someTime',
+  email: 'someEmail',
+  phone: 'phoneNumber',
+  pushNotificationKey: 'someKey',
+  receiveEmail: false,
+  receiveSmsNotification: false,
+  receivePushNotification: false,
+  createdTime: 'someTime',
+  status: ReservationStatus.REQUESTED,
+};
 
 describe('CallsService', () => {
   let reservationService: ReservationsService;
@@ -33,24 +48,19 @@ describe('CallsService', () => {
 
   describe('getSingleReservationResponse', () => {
     it('calls reservationRepository.findOne and return a result', async () => {
-      const mockReservation = {
-        id: 'someId',
-        startTime: 'someTime',
-        endTime: 'someTime',
-        email: 'someEmail',
-        phone: 'phoneNumber',
-        pushNotificationKey: 'someKey',
-        receiveEmail: false,
-        receiveSmsNotification: false,
-        receivePushNotification: false,
-        createdTime: 'someTime',
-        status: ReservationStatus.REQUESTED,
-      };
       reservationRepository.findOne.mockResolvedValue(mockReservation);
       const result = await reservationService.getSingleReservationResponse(
         'someId',
       );
       expect(result).toEqual(mockReservation);
+    });
+  });
+
+  describe('getReservationsResponse', () => {
+    it('calls getReservationsResponse and return a result', async () => {
+      const result: Reservation[] = [mockReservation];
+      reservationRepository.find.mockResolvedValue(result);
+      expect(await reservationService.getReservationsResponse()).toBe(result);
     });
   });
 });

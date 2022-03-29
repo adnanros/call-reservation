@@ -17,7 +17,9 @@ export class ReservationsService {
   ) {}
 
   async getReservationsResponse(): Promise<Reservation[]> {
-    return this.reservationsRepository.getReservationsResponse();
+    const reservations: Reservation[] =
+      await this.reservationsRepository.find();
+    return reservations;
   }
 
   async getSingleReservationResponse(id: string): Promise<Reservation> {

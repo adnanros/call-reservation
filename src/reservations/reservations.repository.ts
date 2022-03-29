@@ -3,8 +3,8 @@ import { ReservationStatus } from './reservation-status.enum';
 import { Reservation } from './reservation.entity';
 import { CreateReservationRequestDto } from './dto/create-reservation-request.dto';
 import { Logger } from '@nestjs/common';
-import { SchedulersService } from 'src/schedulers/schedulers.service';
-import { SchedulersRepository } from 'src/schedulers/schedulers.repository';
+import { SchedulersService } from '../schedulers/schedulers.service';
+import { SchedulersRepository } from '../schedulers/schedulers.repository';
 @EntityRepository(Reservation)
 export class ReservationsRepository extends Repository<Reservation> {
   schedulerService: SchedulersService;
@@ -16,11 +16,6 @@ export class ReservationsRepository extends Repository<Reservation> {
     this.schedulerService = new SchedulersService(this.schedulersRepository);
   }
   private readonly logger = new Logger(ReservationsRepository.name);
-
-  async getReservationsResponse(): Promise<Reservation[]> {
-    const reservations: Reservation[] = await this.find();
-    return reservations;
-  }
 
   async createReservationRequest(
     createReservationDto: CreateReservationRequestDto,
