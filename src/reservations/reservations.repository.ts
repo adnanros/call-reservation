@@ -5,6 +5,10 @@ import { CreateReservationRequestDto } from './dto/create-reservation-request.dt
 import { Logger } from '@nestjs/common';
 import { SchedulersService } from '../schedulers/schedulers.service';
 import { SchedulersRepository } from '../schedulers/schedulers.repository';
+import { SchedulerType } from '../schedulers/scheduler-type.enum';
+/**
+ * This is a Repository for Reservation Model
+ */
 @EntityRepository(Reservation)
 export class ReservationsRepository extends Repository<Reservation> {
   schedulerService: SchedulersService;
@@ -17,6 +21,11 @@ export class ReservationsRepository extends Repository<Reservation> {
   }
   private readonly logger = new Logger(ReservationsRepository.name);
 
+  /**
+   * This method is used to create a reservation in DataBase
+   * @param createReservationDto This includes expected data types in reservation creation
+   * @returns Promise<Reservation> This returns complete information of created reservation
+   */
   async createReservationRequest(
     createReservationDto: CreateReservationRequestDto,
   ): Promise<Reservation> {
@@ -35,7 +44,10 @@ export class ReservationsRepository extends Repository<Reservation> {
     });
 
     await this.save(reservation);
-    await this.schedulerService.setSchedulers(reservation.startTime);
+    await this.schedulerService.setSchedulers(
+      reservation.startTime,
+      SchedulerType.EMAIL,
+    );
     return reservation;
   }
 }

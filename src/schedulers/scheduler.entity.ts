@@ -10,5 +10,5 @@ export class Scheduler extends BaseEntity {
   @Column()
   type: SchedulerType;
   @Column()
-  pendding: boolean;
+  pending: boolean;
 }

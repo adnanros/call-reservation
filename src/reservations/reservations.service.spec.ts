@@ -57,9 +57,11 @@ describe('ReservationsService', () => {
   });
 
   describe('acceptReservationByAdmin ', () => {
-    it('get a reservation with REQUESTED status and updates its status to ACCEPTED', async () => {
+    beforeEach(() => {
       reservationRepository.findOne.mockResolvedValue(mockReservation);
+    });
 
+    it('get a reservation with REQUESTED status and updates its status to ACCEPTED', async () => {
       const result = new Reservation();
       result.id = 'someId';
       result.status = ReservationStatus.ACCEPTED;
@@ -75,7 +77,6 @@ describe('ReservationsService', () => {
       const someReservation = new Reservation();
       someReservation.id = 'someId';
       someReservation.status = ReservationStatus.ACCEPTED;
-      reservationRepository.findOne.mockResolvedValue(someReservation);
 
       try {
         await reservationService.acceptReservationByAdmin(someReservation.id);

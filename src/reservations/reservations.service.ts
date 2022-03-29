@@ -9,6 +9,9 @@ import { Reservation } from './reservation.entity';
 import { ReservationsRepository } from './reservations.repository';
 import { CreateReservationRequestDto } from './dto/create-reservation-request.dto';
 
+/**
+ * This is Service to manage Reservation's tasks
+ */
 @Injectable()
 export class ReservationsService {
   constructor(
@@ -16,12 +19,21 @@ export class ReservationsService {
     private reservationsRepository: ReservationsRepository,
   ) {}
 
+  /**
+   * This method is used to return all of Saved Reservations in DataBase
+   * @return Promise<Reservation[]> This returns an array of Reserations
+   */
   async getReservationsResponse(): Promise<Reservation[]> {
     const reservations: Reservation[] =
       await this.reservationsRepository.find();
     return reservations;
   }
 
+  /**
+   * This method is used to return reservation with a specific id
+   * @param id This is an 'uuid'
+   * @returns Promise<Reservation> this returns a single reservation
+   */
   async getSingleReservationResponse(id: string): Promise<Reservation> {
     try {
       const reservation: Reservation =
@@ -34,6 +46,11 @@ export class ReservationsService {
     }
   }
 
+  /**
+   * This method is used to create a reservation with given information
+   * @param createReservationDto This is an expected interface for the types of given information
+   * @returns Promise<Reservation> This returns the created reservation information
+   */
   async createReservationRequest(
     createReservationDto: CreateReservationRequestDto,
   ): Promise<Reservation> {
@@ -43,11 +60,10 @@ export class ReservationsService {
   }
 
   /**
-   1. At the first we should try fetch the target reservation to see if that it exists.
-   2.Secondly, we have to take the previous state of the reservation, the acceptance
-    should be applied for only the reservations which are in Requested state.
-
-  */
+   * This method is used to update the status of the given reservation to Accepted by admin
+   * @param id This is the id of target reservation
+   * @returns Promise<Reservation> This returns the complete information of updated reservation
+   */
   async acceptReservationByAdmin(id: string): Promise<Reservation> {
     const reservation = await this.getSingleReservationResponse(id);
     if (reservation.status === ReservationStatus.REQUESTED) {
@@ -85,8 +101,10 @@ export class ReservationsService {
   }
 
   /**
-    Admin can reject any reservation except that reservations which are done already
- */
+   * This method is used to update the status of the given reservation to REJECTED by admin
+   * @param id This is the id of target reservation
+   * @returns Promise<Reservation> This returns the complete information of updated reservation
+   */
   async rejectReservationByAdmin(id: string): Promise<Reservation> {
     const reservation = await this.getSingleReservationResponse(id);
     if (reservation.status !== ReservationStatus.DONE) {
@@ -101,8 +119,11 @@ export class ReservationsService {
     }
   }
 
-  // User can only cancel the reservation that is in requested or accepted state
-
+  /**
+   * This method is used to update the status of the given reservation to CANCELED by User
+   * @param id This is the id of target reservation
+   * @returns Promise<Reservation> This returns the complete information of updated reservation
+   */
   async cancelReservationByUser(id: string): Promise<Reservation> {
     const reservation = await this.getSingleReservationResponse(id);
     if (
@@ -120,6 +141,13 @@ export class ReservationsService {
     }
   }
 
+  /**
+   * This method is used to update the start time of a reservation
+   * the new time should not be greater than NOW
+   * @param id This is the id of target reservation
+   * @param startTime This is a new start time
+   * @returns Promise<Reservation> This returns the complete information of updated reservation
+   */
   async updateReservationTime(
     id: string,
     startTime: string,
