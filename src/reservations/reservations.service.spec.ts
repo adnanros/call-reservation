@@ -1,3 +1,4 @@
+import { MethodNotAllowedException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ReservationStatus } from './reservation-status.enum';
 import { Reservation } from './reservation.entity';
@@ -10,21 +11,11 @@ const mockReservationRepository = () => ({
   save: jest.fn(),
 });
 
-const mockReservation = {
-  id: 'someId',
-  startTime: 'someTime',
-  endTime: 'someTime',
-  email: 'someEmail',
-  phone: 'phoneNumber',
-  pushNotificationKey: 'someKey',
-  receiveEmail: false,
-  receiveSmsNotification: false,
-  receivePushNotification: false,
-  createdTime: 'someTime',
-  status: ReservationStatus.REQUESTED,
-};
+const mockReservation = new Reservation();
+mockReservation.id = 'someId';
+mockReservation.status = ReservationStatus.REQUESTED;
 
-describe('CallsService', () => {
+describe('ReservationsService', () => {
   let reservationService: ReservationsService;
   let reservationRepository;
 
@@ -66,26 +57,86 @@ describe('CallsService', () => {
   });
 
   describe('acceptReservationByAdmin ', () => {
-    it('get a reservation with requested status and updates its status to accpted', async () => {
+    it('get a reservation with REQUESTED status and updates its status to ACCEPTED', async () => {
       reservationRepository.findOne.mockResolvedValue(mockReservation);
-      const acceptedReservation = {
-        id: 'someId',
-        startTime: 'someTime',
-        endTime: 'someTime',
-        email: 'someEmail',
-        phone: 'phoneNumber',
-        pushNotificationKey: 'someKey',
-        receiveEmail: false,
-        receiveSmsNotification: false,
-        receivePushNotification: false,
-        createdTime: 'someTime',
-        status: ReservationStatus.ACCEPTED,
-      };
-      const result: Reservation = acceptedReservation;
+
+      const result = new Reservation();
+      result.id = 'someId';
+      result.status = ReservationStatus.ACCEPTED;
 
       reservationRepository.save.mockResolvedValue(result);
+
       expect(
         await reservationService.acceptReservationByAdmin(mockReservation.id),
+      ).toEqual(result);
+    });
+
+    it('get a reservation with status that is not REQUESTED and throw Exception', async () => {
+      const someReservation = new Reservation();
+      someReservation.id = 'someId';
+      someReservation.status = ReservationStatus.ACCEPTED;
+      reservationRepository.findOne.mockResolvedValue(someReservation);
+
+      try {
+        await reservationService.acceptReservationByAdmin(someReservation.id);
+      } catch (error) {
+        expect(error).toEqual(
+          new MethodNotAllowedException(
+            'Action is not allowed for this reservation',
+          ),
+        );
+      }
+    });
+  });
+
+  describe('rejectReservationByAdmin ', () => {
+    it('get a reservation with REQUESTED or ACCEPTED status and updates its status to rejected', async () => {
+      reservationRepository.findOne.mockResolvedValue(mockReservation);
+
+      const result = new Reservation();
+      result.id = 'someId';
+      result.status = ReservationStatus.REJECTED;
+
+      reservationRepository.save.mockResolvedValue(result);
+
+      expect(
+        await reservationService.rejectReservationByAdmin(mockReservation.id),
+      ).toEqual(result);
+    });
+
+    it('get a reservation with status that is DONE and throw Exception', async () => {
+      const someReservation = new Reservation();
+      someReservation.id = 'someId';
+      someReservation.status = ReservationStatus.DONE;
+      reservationRepository.findOne.mockResolvedValue(someReservation);
+
+      try {
+        await reservationService.rejectReservationByAdmin(someReservation.id);
+      } catch (error) {
+        expect(error).toEqual(
+          new MethodNotAllowedException(
+            'The target reservation is done already',
+          ),
+        );
+      }
+    });
+  });
+
+  describe('updateReservationTime', () => {
+    it('get a reservation which is not having status DONE or ONGOING', async () => {
+      const result = new Reservation();
+      result.id = 'someId';
+      const newStartTime = Date.now() + 50000;
+      result.startTime = newStartTime.toString();
+      result.status = ReservationStatus.REQUESTED;
+      reservationRepository.findOne.mockResolvedValue(mockReservation);
+      reservationRepository.save.mockResolvedValue(result);
+
+      expect(
+        await reservationService.updateReservationTime(
+          mockReservation.id,
+          newStartTime.toString(),
+        ),
       ).toEqual(result);
     });
   });
