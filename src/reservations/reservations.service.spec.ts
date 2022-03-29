@@ -7,6 +7,7 @@ import { ReservationsService } from './reservations.service';
 const mockReservationRepository = () => ({
   find: jest.fn(),
   findOne: jest.fn(),
+  save: jest.fn(),
 });
 
 const mockReservation = {
@@ -61,6 +62,31 @@ describe('CallsService', () => {
       const result: Reservation[] = [mockReservation];
       reservationRepository.find.mockResolvedValue(result);
       expect(await reservationService.getReservationsResponse()).toBe(result);
+    });
+  });
+
+  describe('acceptReservationByAdmin ', () => {
+    it('get a reservation with requested status and updates its status to accpted', async () => {
+      reservationRepository.findOne.mockResolvedValue(mockReservation);
+      const acceptedReservation = {
+        id: 'someId',
+        startTime: 'someTime',
+        endTime: 'someTime',
+        email: 'someEmail',
+        phone: 'phoneNumber',
+        pushNotificationKey: 'someKey',
+        receiveEmail: false,
+        receiveSmsNotification: false,
+        receivePushNotification: false,
+        createdTime: 'someTime',
+        status: ReservationStatus.ACCEPTED,
+      };
+      const result: Reservation = acceptedReservation;
+
+      reservationRepository.save.mockResolvedValue(result);
+      expect(
+        await reservationService.acceptReservationByAdmin(mockReservation.id),
+      ).toEqual(result);
     });
   });
 });
