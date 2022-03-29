@@ -8,16 +8,20 @@ import { ReservationStatus } from './reservation-status.enum';
 import { Reservation } from './reservation.entity';
 import { ReservationsRepository } from './reservations.repository';
 import { CreateReservationRequestDto } from './dto/create-reservation-request.dto';
+import { Email } from './email.service';
 
 /**
  * This is Service to manage Reservation's tasks
  */
 @Injectable()
 export class ReservationsService {
+  emailService: Email;
   constructor(
     @InjectRepository(ReservationsRepository)
     private reservationsRepository: ReservationsRepository,
-  ) {}
+  ) {
+    this.emailService = new Email();
+  }
 
   /**
    * This method is used to return all of Saved Reservations in DataBase
@@ -69,28 +73,14 @@ export class ReservationsService {
     if (reservation.status === ReservationStatus.REQUESTED) {
       reservation.status = ReservationStatus.ACCEPTED;
       await this.reservationsRepository.save(reservation);
-      console.log('emailTo(UserEmailAddress)');
+      this.emailService.sendTo(reservation.email);
       if (reservation.receiveEmail) {
-        console.log(
-          'setSheduleEventOnServer(emailTo(user' +
-            reservation.email +
-            ')) on reservation.startTime - 10min',
-        );
+        this.emailService.sendTo(reservation.email);
       }
       if (reservation.receivePushNotification) {
-        console.log(
-          'setSheduleEventOnServer(emailTo(user' +
-            reservation.email +
-            ')) on reservation.startTime - 5min:',
-        );
+        this.emailService.sendTo(reservation.email);
       }
-      if (reservation.receiveSmsNotification) {
-        console.log(
-          'setSheduleEventOnServer(emailTo(user' +
-            reservation.email +
-            ')) on reservation.startTime - 1min:',
-        );
-      }
+      
 
       return reservation;
     } else {
@@ -110,7 +100,7 @@ export class ReservationsService {
     if (reservation.status !== ReservationStatus.DONE) {
       reservation.status = ReservationStatus.REJECTED;
       await this.reservationsRepository.save(reservation);
-      console.log('emailTo(UserEmailAddress)');
+      this.emailService.sendTo(reservation.email);
       return reservation;
     } else {
       throw new MethodNotAllowedException(
@@ -132,7 +122,8 @@ export class ReservationsService {
     ) {
       reservation.status = ReservationStatus.CANCELED;
       await this.reservationsRepository.save(reservation);
-      console.log('emailTo(AdminEmailAddress)');
+      // We should Change this to Email of ADMIN
+      this.emailService.sendTo(reservation.email);
       return reservation;
     } else {
       throw new MethodNotAllowedException(
@@ -161,7 +152,7 @@ export class ReservationsService {
       reservation.startTime = startTime;
       reservation.status = ReservationStatus.REQUESTED;
       await this.reservationsRepository.save(reservation);
-      console.log('emailTo(AdminEmailAddress)');
+      this.emailService.sendTo(reservation.email);
       return reservation;
     } else {
       throw new MethodNotAllowedException(
