@@ -1,15 +1,36 @@
-import { MethodNotAllowedException } from '@nestjs/common';
+import { Global, MethodNotAllowedException, Module } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
+import { SchedulersRepository } from '../schedulers/schedulers.repository';
+import { SchedulersService } from '../schedulers/schedulers.service';
+import { SchedulersModule } from '../schedulers/schedulers.module';
+import { Email } from './email.service';
 import { ReservationStatus } from './reservation-status.enum';
 import { Reservation } from './reservation.entity';
 import { ReservationsRepository } from './reservations.repository';
 import { ReservationsService } from './reservations.service';
+
+@Global()
+@Module({
+  providers: [
+    {
+      provide: SchedulersService,
+      useValue: {}
+    },
+    {
+      provide: SchedulersRepository,
+      useValue: {}
+    }
+  ],
+  exports: [SchedulersService]
+})
+class TestSchedulerModule {}
 
 const mockReservationRepository = () => ({
   find: jest.fn(),
   findOne: jest.fn(),
   save: jest.fn(),
 });
+const mockSchedulersRepository = () => ({});
 
 const mockReservation = new Reservation();
 mockReservation.id = 'someId';
@@ -20,13 +41,16 @@ describe('ReservationsService', () => {
   let reservationRepository;
 
   beforeEach(async () => {
+   
     const module: TestingModule = await Test.createTestingModule({
+      imports: [TestSchedulerModule],
       providers: [
         ReservationsService,
         {
           provide: ReservationsRepository,
           useFactory: mockReservationRepository,
         },
+        Email,
       ],
     }).compile();
 
