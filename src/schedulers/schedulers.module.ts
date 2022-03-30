@@ -7,7 +7,6 @@ import { SchedulersService } from './schedulers.service';
 
 @Module({
   imports: [
-    ScheduleModule.forRoot(),
     TypeOrmModule.forFeature([Scheduler, SchedulersRepository]),
   ],
   providers: [SchedulersService],

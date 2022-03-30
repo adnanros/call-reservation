@@ -9,19 +9,20 @@ import { Reservation } from './reservation.entity';
 import { ReservationsRepository } from './reservations.repository';
 import { CreateReservationRequestDto } from './dto/create-reservation-request.dto';
 import { Email } from './email.service';
+import { SchedulersService } from '../schedulers/schedulers.service';
+import { SchedulerType } from '../schedulers/scheduler-type.enum';
 
 /**
  * This is Service to manage Reservation's tasks
  */
 @Injectable()
 export class ReservationsService {
-  emailService: Email;
   constructor(
     @InjectRepository(ReservationsRepository)
     private reservationsRepository: ReservationsRepository,
-  ) {
-    this.emailService = new Email();
-  }
+    private readonly schedulersService: SchedulersService,
+    private emailService: Email,
+  ) {}
 
   /**
    * This method is used to return all of Saved Reservations in DataBase
@@ -51,16 +52,33 @@ export class ReservationsService {
   }
 
   /**
-   * This method is used to create a reservation with given information
+   * This method is used to create a reservation in DataBase
    * @param createReservationDto This is an expected interface for the types of given information
    * @returns Promise<Reservation> This returns the created reservation information
    */
   async createReservationRequest(
     createReservationDto: CreateReservationRequestDto,
   ): Promise<Reservation> {
-    return this.reservationsRepository.createReservationRequest(
-      createReservationDto,
+    const { startTime, endTime, email, phone } = createReservationDto;
+    const reservation = this.reservationsRepository.create({
+      startTime,
+      endTime,
+      email,
+      phone,
+      pushNotificationKey: 'someNotificationKey',
+      receiveEmail: false,
+      receiveSmsNotification: false,
+      receivePushNotification: false,
+      status: ReservationStatus.REQUESTED,
+      createdTime: new Date().getTime().toString(),
+    });
+
+    await this.reservationsRepository.save(reservation);
+    await this.schedulersService.setSchedulers(
+      reservation.startTime,
+      SchedulerType.EMAIL,
     );
+    return reservation;
   }
 
   /**
