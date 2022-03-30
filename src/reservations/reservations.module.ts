@@ -10,7 +10,6 @@ import { ReservationsService } from './reservations.service';
 @Module({
   imports: [
     TypeOrmModule.forFeature([Reservation, ReservationsRepository]),
-    SchedulersService,
     SchedulersModule,
   ],
   controllers: [ReservationsController],
