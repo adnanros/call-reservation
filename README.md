@@ -49,7 +49,8 @@ $ npm run test:cov
 
 ## Stay in touch
 
-- Author - [Adnan Rostami](adnan.ros1@gmail.com)
+- Author - Adnan Rostami
+- Email - [adnan.ros1@gmail.com](mailto:adnan.ros1@gmail.com)
 - LinkedIn - [https://www.linkedin.com/in/adnan-rostami)
 
 ## License
